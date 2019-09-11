@@ -1,13 +1,17 @@
 <template>
     <div class="aside">
         <div class="title">
-            <img src="../../assets/img/logo_admin.png" alt="">
+            <img :src="collapse ? smallImg : bigImg " alt="">
         </div>
         <el-menu
         background-color="#323745"
         text-color="#adafb5"
         active-text-color=" #ffd04b"
-        router>
+        router
+        :collapse="collapse"
+        :style="{width:collapse ? '60px' : '200px'}"
+        style="border-right:none"
+        >
         <el-menu-item index="">
             <i class="el-icon-s-home"></i>
             <span slot="title">首页</span>
@@ -41,23 +45,36 @@
 </template>
 
 <script>
+import eventBus from '../../utils/events'
 export default {
-
+  data () {
+    return {
+      collapse: false,
+      smallImg: require('../../assets/img/toutiao.png'),
+      bigImg: require('../../assets/img/logo_admin.png')
+    }
+  },
+  created () {
+    eventBus.$on('openOrClose', (status) => {
+      this.collapse = status
+    })
+  }
 }
 </script>
 
 <style lang="less" scoped>
     .aside {
-        // width: 200px;
+        overflow: hidden;
         height: 100vh;
         background-color: #323745;
         .title {
             text-align: center;
             width: 100%;
-            padding: 10px 0;
+            padding: 10px;
             background-color:  #2e2f32;
+
             img {
-                width: 140px;
+                width: 100%;
             }
         }
 

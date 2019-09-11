@@ -1,7 +1,8 @@
 <template>
   <el-row type="flex" justify="space-between" class="layout-header">
       <el-col :span="6" class="left">
-        <i class="el-icon-s-fold icon"></i>
+        <!-- <i class="icon" @click="openOrClose" :class="{'el-icon-s-fold':!colse, 'el-icon-s-unfold':colse }"></i> -->
+        <i class="icon" @click="openOrClose" :class="close ? 'el-icon-s-unfold' : 'el-icon-s-fold'"></i>
         <span>江苏传智播客</span>
       </el-col>
       <el-col :span="4" class="right">
@@ -22,24 +23,29 @@
 </template>
 
 <script>
+import eventBus from '../../utils/events'
 export default {
   data () {
     return {
+      close: false,
       userInfo: {},
       defaultImg: require('../../assets/img/avatar.jpg')
     }
   },
   methods: {
+    // 左侧导航折叠
+    openOrClose () {
+      this.close = !this.close
+      console.log(this.close)
+      eventBus.$emit('openOrClose', this.close)
+    },
     getUserInfo () {
-      let token = window.localStorage.getItem('user-token')
-
-      console.log(token)
       this.$axios({
-        url: '/user/profile',
-        headers: { 'Authorization': `Bearer ${token}` }
+        url: '/user/profile'
+
       }).then(result => {
-        console.log(result)
-        this.userInfo = result.data.data
+        // console.log(result)
+        this.userInfo = result.data
       })
     },
     handleCommand (command) {
@@ -55,6 +61,9 @@ export default {
     }
   },
   created () {
+    eventBus.$on('updateInfo', () => {
+      this.getUserInfo()
+    })
     this.getUserInfo()
   }
 }
